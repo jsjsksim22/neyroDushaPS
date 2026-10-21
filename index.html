@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Нейро-душа — поддержка перед экзаменом</title>
+<style>
+  :root{
+    --bg: #f4f6f4;
+    --bg-2: #eef1ee;
+    --card: #fbfcfb;
+    --text: #2f3a38;
+    --muted: #7a8683;
+    --accent: #7c9a92;
+    --accent-2: #9bb0a8;
+    --accent-soft: #e6eeeb;
+    --green: #8fae9f;
+    --green-soft: #eaf2ee;
+    --warn: #c98b8b;
+    --warn-soft: #f6eaea;
+    --sand: #e9e2d6;
+    --sand-soft: #f3eee6;
+    --radius: 20px;
+    --shadow: 0 14px 40px rgba(70, 90, 85, 0.07);
+    --shadow-soft: 0 4px 14px rgba(70, 90, 85, 0.05);
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-2) 100%);
+    color: var(--text);
+    font-family: "Segoe UI", "PT Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap{
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px 120px;
+  }
+
+  /* ===== Hero ===== */
+  header.hero{
+    text-align:center;
+    padding: 10px 10px 34px;
+  }
+  header.hero .logo{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 12px;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--text);
+  }
+  header.hero .logo svg{ width: 34px; height: 34px; color: var(--accent); }
+  header.hero p{
+    color: var(--muted);
+    font-size: 14.5px;
+    margin: 12px auto 0;
+    max-width: 460px;
+    line-height: 1.65;
+  }
+
+  /* ===== User bar ===== */
+  .userbar{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: var(--shadow-soft);
+    padding: 12px 18px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(124, 154, 146, 0.08);
+    font-size: 14px;
+  }
+  .userbar .who{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    color: var(--text);
+    min-width: 0;
+  }
+  .userbar .avatar{
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .userbar .name{
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .userbar .name small{
+    display:block;
+    font-weight: 400;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .userbar .actions{ display:flex; gap: 8px; flex-shrink: 0; }
+  .userbar button{
+    border: 1px solid #e0e6e3;
+    background: transparent;
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 11px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor:pointer;
+    transition: all .18s ease;
+  }
+  .userbar button:hover{ background: var(--bg-2); color: var(--text); }
+  .userbar button.primary{
+    background: var(--accent);
+    border-color: var(--accent);
+    color:#fff;
+  }
+  .userbar button.primary:hover{ background: #6d8a82; }
+
+  /* ===== Auth modal ===== */
+  .auth-overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(47, 58, 56, 0.35);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+  }
+  .auth-overlay.open{ display: flex; }
+  .auth-card{
+    background: var(--card);
+    border-radius: 22px;
+    box-shadow: 0 24px 60px rgba(40, 55, 50, 0.25);
+    width: 100%;
+    max-width: 400px;
+    padding: 30px 26px 26px;
+    position: relative;
+    animation: authPop .25s ease;
+  }
+  @keyframes authPop{
+    from{ opacity: 0; transform: translateY(10px) scale(.98); }
+    to{ opacity: 1; transform: none; }
+  }
+  .auth-card .close{
+    position:absolute;
+    top: 14px; right: 14px;
+    width: 34px; height: 34px;
+    border:none;
+    background: transparent;
+    color: var(--muted);
+    border-radius: 10px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: background .18s ease;
+  }
+  .auth-card .close:hover{ background: var(--bg-2); }
+  .auth-card .close svg{ width: 18px; height: 18px; }
+  .auth-card h3{
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 600;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .auth-card h3 svg{ width: 22px; height: 22px; color: var(--accent); }
+  .auth-card .auth-sub{
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0 0 20px;
+    line-height: 1.55;
+  }
+  .auth-tabs{
+    display:flex;
+    gap: 6px;
+    background: var(--bg-2);
+    padding: 5px;
+    border-radius: 13px;
+    margin-bottom: 20px;
+  }
+  .auth-tab{
+    flex:1;
+    padding: 9px 0;
+    text-align:center;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor:pointer;
+    border:none;
+    transition: all .18s ease;
+  }
+  .auth-tab.active{
+    background: #fff;
+    color: var(--accent);
+    box-shadow: var(--shadow-soft);
+  }
+  .auth-field{ margin-bottom: 14px; }
+  .auth-field label{
+    display:block;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .auth-field input{
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e0e6e3;
+    background: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    outline:none;
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+  .auth-field input:focus{
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 3px rgba(124, 154, 146, 0.12);
+  }
+  .auth-field .hint{
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 5px;
+    line-height: 1.45;
+  }
+  .auth-error{
+    background: var(--warn-soft);
+    color: #9a5a5a;
+    border-radius: 11px;
+    padding: 10px 13px;
+    font-size: 12.5px;
+    margin-bottom: 14px;
+    display:none;
+    line-height: 1.5;
+    border-left: 3px solid var(--warn);
+  }
+  .auth-error.show{ display:block; }
+  .auth-submit{
+    width: 100%;
+    border:none;
+    background: var(--accent);
+    color:#fff;
+    padding: 13px 20px;
+    border-radius: 13px;
+    font-size: 14.5px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor:pointer;
+    transition: background .18s ease;
+    margin-top: 4px;
+  }
+  .auth-submit:hover{ background: #6d8a82; }
+  .auth-submit:disabled{ opacity: .6; cursor: default; }
+  .auth-note{
+    margin-top: 16px;
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.55;
+    text-align: center;
+  }
+
+  /* ===== Cards ===== */
+  section.card{
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 26px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(124, 154, 146, 0.08);
+  }
+  section.card h2{
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 600;
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    color: var(--text);
+  }
+  section.card .badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  section.card .badge svg{ width: 20px; height: 20px; }
+  section.card .sub{
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: 0 0 22px;
+    line-height: 1.55;
+  }
+
+  /* ===== 1. State check ===== */
+  .scale-row{
+    display:flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .scale-btn{
+    flex:1;
+    border: 1px solid transparent;
+    background: var(--bg-2);
+    border-radius: 11px;
+    padding: 11px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .18s ease;
+    font-family: inherit;
+  }
+  .scale-btn:hover{ background: var(--accent-soft); color: var(--accent); }
+  .scale-btn.active{
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+  }
+  .scale-labels{
+    display:flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+  .mood-row{
+    display:flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .mood-btn{
+    border: 1px solid transparent;
+    background: var(--bg-2);
+    border-radius: 14px;
+    width: 54px; height: 54px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: var(--muted);
+    cursor:pointer;
+    transition: all .18s ease;
+  }
+  .mood-btn svg{ width: 26px; height: 26px; }
+  .mood-btn:hover{ background: var(--accent-soft); color: var(--accent); }
+  .mood-btn.active{
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: var(--accent-2);
+    transform: scale(1.06);
+  }
+  #stateResult{
+    margin-top: 18px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: var(--green-soft);
+    color: #4a6b60;
+    font-size: 14px;
+    display:none;
+    line-height: 1.6;
+    border-left: 3px solid var(--green);
+  }
+
+  /* ===== 2. Chat ===== */
+  .chat-box{
+    background: var(--bg-2);
+    border-radius: 16px;
+    padding: 16px;
+    height: 340px;
+    overflow-y: auto;
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+    scroll-behavior: smooth;
+  }
+  .msg{
+    max-width: 82%;
+    padding: 11px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .msg.bot{
+    align-self:flex-start;
+    background: #fff;
+    border-bottom-left-radius: 5px;
+    box-shadow: var(--shadow-soft);
+    color: var(--text);
+  }
+  .msg.user{
+    align-self:flex-end;
+    background: var(--accent);
+    color:#fff;
+    border-bottom-right-radius: 5px;
+  }
+  .msg.error{
+    align-self:flex-start;
+    background: var(--warn-soft);
+    color: #8a5a5a;
+    border-bottom-left-radius: 5px;
+    border-left: 3px solid var(--warn);
+    font-size: 13px;
+  }
+  .typing{
+    align-self:flex-start;
+    background: #fff;
+    border-radius: 15px;
+    border-bottom-left-radius: 5px;
+    box-shadow: var(--shadow-soft);
+    padding: 13px 16px;
+    display:flex;
+    gap: 5px;
+    align-items:center;
+  }
+  .typing span{
+    width: 7px; height: 7px;
+    background: var(--accent-2);
+    border-radius: 50%;
+    animation: typingBounce 1.2s infinite ease-in-out;
+  }
+  .typing span:nth-child(2){ animation-delay: .18s; }
+  .typing span:nth-child(3){ animation-delay: .36s; }
+  @keyframes typingBounce{
+    0%, 60%, 100%{ transform: translateY(0); opacity: .5; }
+    30%{ transform: translateY(-4px); opacity: 1; }
+  }
+  .chat-input-row{ display:flex; gap: 10px; }
+  .chat-input-row input{
+    flex:1;
+    padding: 13px 16px;
+    border-radius: 13px;
+    border: 1px solid #e0e6e3;
+    background: #fff;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    outline:none;
+    transition: border-color .18s ease, box-shadow .18s ease;
+  }
+  .chat-input-row input:focus{
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 3px rgba(124, 154, 146, 0.12);
+  }
+  .chat-input-row input::placeholder{ color: #b0b9b6; }
+  .chat-input-row button{
+    border:none;
+    background: var(--accent);
+    color:#fff;
+    padding: 0 20px;
+    border-radius: 13px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor:pointer;
+    font-weight: 600;
+    transition: background .18s ease;
+  }
+  .chat-input-row button:hover{ background: #6d8a82; }
+  .chat-input-row button:disabled{ opacity: .6; cursor: default; background: var(--accent); }
+  .disclaimer{
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+    line-height: 1.55;
+  }
+
+  /* ===== 3. Relaxation ===== */
+  .relax-tabs{
+    display:flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: var(--bg-2);
+    padding: 5px;
+    border-radius: 14px;
+  }
+  .relax-tab{
+    flex:1;
+    padding: 10px 0;
+    text-align:center;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor:pointer;
+    border:none;
+    transition: all .18s ease;
+  }
+  .relax-tab.active{
+    background: #fff;
+    color: var(--accent);
+    box-shadow: var(--shadow-soft);
+  }
+  .relax-panel{ display:none; }
+  .relax-panel.active{ display:block; }
+
+  .sound-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .sound-card{
+    background: var(--bg-2);
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition: all .18s ease;
+    border: 1px solid transparent;
+  }
+  .sound-card .emoji{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom: 10px;
+    color: var(--accent);
+  }
+  .sound-card .emoji svg{ width: 30px; height: 30px; }
+  .sound-card .name{ font-size: 13.5px; font-weight:600; display:block; color: var(--text); }
+  .sound-card .state{ font-size: 11.5px; color: var(--muted); margin-top: 4px; display:block; }
+  .sound-card:hover{ background: var(--accent-soft); }
+  .sound-card.playing{
+    border-color: var(--accent-2);
+    background: var(--green-soft);
+  }
+  .sound-card.playing .emoji{ color: var(--green); }
+
+  .breathe-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 14px 0 6px;
+  }
+  .breathe-circle{
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #b7c9c2, var(--accent) 72%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-weight: 600;
+    font-size: 15px;
+    transition: transform 3.6s ease-in-out;
+    box-shadow: 0 16px 36px rgba(124, 154, 146, 0.28);
+    text-align: center;
+    padding: 0 10px;
+  }
+  .breathe-controls{
+    margin-top: 22px;
+    display:flex;
+    gap: 10px;
+  }
+  .btn-outline{
+    border: 1.5px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    padding: 10px 20px;
+    border-radius: 13px;
+    font-size: 13.5px;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .18s ease;
+  }
+  .btn-outline:hover{ background: var(--accent-soft); }
+  .btn-outline.active{ background: var(--accent); color:#fff; }
+
+  /* ===== 4. Affirmation ===== */
+  .affirm-box{
+    background: linear-gradient(135deg, var(--accent-soft), var(--sand-soft));
+    border-radius: 18px;
+    padding: 32px 26px;
+    text-align:center;
+    font-size: 17px;
+    font-weight: 500;
+    color: #3d4f4a;
+    line-height: 1.6;
+    min-height: 100px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border: 1px solid rgba(124, 154, 146, 0.1);
+  }
+  .affirm-btn{
+    display:block;
+    margin: 18px auto 0;
+    border:none;
+    background: var(--accent);
+    color:#fff;
+    padding: 12px 24px;
+    border-radius: 13px;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight:600;
+    cursor:pointer;
+    transition: background .18s ease;
+  }
+  .affirm-btn:hover{ background: #6d8a82; }
+
+  /* ===== 5. Hotline — sticky ===== */
+  .hotline{
+    position: sticky;
+    bottom: 16px;
+    margin-top: 6px;
+    background: linear-gradient(135deg, #b98a8a, #a87878);
+    color:#fff;
+    border-radius: 20px;
+    padding: 18px 22px;
+    box-shadow: 0 16px 36px rgba(150, 100, 100, 0.25);
+    display:flex;
+    align-items:center;
+    gap: 16px;
+  }
+  .hotline .icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.16);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  .hotline .icon svg{ width: 22px; height: 22px; }
+  .hotline .txt{ flex:1; font-size: 13px; line-height:1.45; }
+  .hotline .txt b{ display:block; font-size: 14.5px; margin-bottom: 3px; font-weight: 600; }
+  .hotline a{
+    background: #fff;
+    color: #8a5f5f;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 11px 18px;
+    border-radius: 13px;
+    text-decoration:none;
+    white-space:nowrap;
+    transition: transform .18s ease;
+  }
+  .hotline a:hover{ transform: translateY(-1px); }
+
+  footer{
+    text-align:center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 34px;
+  }
+
+  @media (max-width: 480px){
+    .wrap{ padding: 28px 16px 110px; }
+    section.card{ padding: 22px 20px; }
+    header.hero .logo{ font-size: 25px; }
+    .breathe-circle{ width: 130px; height: 130px; font-size: 14px; }
+    .hotline{ flex-direction:column; align-items:flex-start; }
+    .hotline a{ align-self:stretch; text-align:center; }
+    .mood-row{ gap: 8px; }
+    .mood-btn{ width: 48px; height: 48px; }
+    .mood-btn svg{ width: 22px; height: 22px; }
+    .userbar{ flex-wrap: wrap; }
+    .userbar .actions{ width: 100%; justify-content: flex-end; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/>
+      </svg>
+      Нейро-душа
+    </div>
+    <p>Небольшая пауза перед экзаменом: оцени состояние, поговори с помощником,<br>расслабься и настройся на хороший результат.</p>
+  </header>
+
+  <!-- User bar -->
+  <div class="userbar" id="userbar">
+    <div class="who" id="userbarWho" style="display:none;">
+      <div class="avatar" id="userAvatar">?</div>
+      <div class="name" id="userName">Гость<small>анонимный режим</small></div>
+    </div>
+    <div class="who" id="userbarGuest">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+          <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+        </svg>
+      </div>
+      <div class="name">Гость<small>анонимный режим</small></div>
+    </div>
+    <div class="actions" id="userActions">
+      <!-- Эта кнопка — только "заглушка" на первую долю секунды до загрузки скрипта,
+           сам скрипт сразу перерисовывает содержимое этого блока через renderUser(). -->
+      <button class="primary">Войти</button>
+    </div>
+  </div>
+
+  <!-- 1. Самооценка состояния -->
+  <section class="card">
+    <h2>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19V9"/><path d="M9 19V5"/><path d="M14 19v-7"/><path d="M19 19v-4"/>
+        </svg>
+      </span>
+      Как ты себя сейчас чувствуешь?
+    </h2>
+    <p class="sub">Отметь уровень тревожности от 1 до 10 — это поможет понять, с чего начать.</p>
+
+    <div class="scale-row" id="scaleRow"></div>
+    <div class="scale-labels">
+      <span>Спокойно</span>
+      <span>Очень тревожно</span>
+    </div>
+
+    <div class="mood-row">
+      <button class="mood-btn" data-mood="Спокойствие" aria-label="Спокойствие">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M8.5 14.5c.8 1 2 1.5 3.5 1.5s2.7-.5 3.5-1.5"/>
+        </svg>
+      </button>
+      <button class="mood-btn" data-mood="Лёгкое волнение" aria-label="Лёгкое волнение">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M9 15c.9.7 1.9 1 3 1s2.1-.3 3-1"/>
+        </svg>
+      </button>
+      <button class="mood-btn" data-mood="Тревога" aria-label="Тревога">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M8 10h.01"/><path d="M16 10h.01"/><path d="M9 16c.9-.9 1.9-1.3 3-1.3s2.1.4 3 1.3"/>
+        </svg>
+      </button>
+      <button class="mood-btn" data-mood="Паника" aria-label="Паника">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><path d="M9 9.5l1.5 1.5"/><path d="M15 9.5L13.5 11"/><path d="M9 16c.9-.9 1.9-1.3 3-1.3s2.1.4 3 1.3"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="stateResult"></div>
+  </section>
+
+  <!-- 2. Чат с ИИ-помощником -->
+  <section class="card">
+    <h2>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-4.5A8 8 0 0 1 5 5a8 8 0 0 1 16 7z"/>
+        </svg>
+      </span>
+      Поговори с помощником
+    </h2>
+    <p class="sub">Расскажи, что тебя беспокоит — он выслушает и поддержит.</p>
+
+    <div class="chat-box" id="chatBox">
+      <div class="msg bot" id="chatHello">Привет! Я рядом. Расскажи, что тебя сейчас тревожит перед экзаменом — можно в двух словах, можно подробно.</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Напиши сообщение..." />
+      <button id="chatSend">Отправить</button>
+    </div>
+    <div class="disclaimer">Это помощник на основе ИИ. Он не заменяет консультацию психолога. Если тебе тяжело — посмотри блок ниже с телефоном горячей линии.</div>
+  </section>
+
+  <!-- 3. Релаксация -->
+  <section class="card">
+    <h2>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 21c0-6 3-9 7-9s7 3 7 9"/><path d="M12 12V3"/><path d="M8 7c0-2 1.5-3 4-4"/>
+        </svg>
+      </span>
+      Расслабление
+    </h2>
+    <p class="sub">Выбери звук природы или сделай дыхательное упражнение на 1–2 минуты.</p>
+
+    <div class="relax-tabs">
+      <button class="relax-tab active" data-tab="sounds">Звуки природы</button>
+      <button class="relax-tab" data-tab="breathe">Дыхание</button>
+    </div>
+
+    <div class="relax-panel active" id="panel-sounds">
+      <div class="sound-grid">
+        <div class="sound-card" data-sound="rain">
+          <span class="emoji">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 16a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1.5A3.5 3.5 0 0 1 18 16"/><path d="M8 20l-1 1.5"/><path d="M12 19l-1 2"/><path d="M16 20l-1 1.5"/>
+            </svg>
+          </span>
+          <span class="name">Дождь</span>
+          <span class="state">нажми, чтобы включить</span>
+        </div>
+        <div class="sound-card" data-sound="sea">
+          <span class="emoji">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12c2 0 3-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2"/><path d="M2 17c2 0 3-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2"/><path d="M2 7c2 0 3-2 5-2s3 2 5 2 3-2 5-2 3 2 5 2"/>
+            </svg>
+          </span>
+          <span class="name">Море</span>
+          <span class="state">нажми, чтобы включить</span>
+        </div>
+        <div class="sound-card" data-sound="forest">
+          <span class="emoji">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l5 7h-3l4 6H6l4-6H7l5-7z"/><path d="M12 16v5"/>
+            </svg>
+          </span>
+          <span class="name">Лес / ветер</span>
+          <span class="state">нажми, чтобы включить</span>
+        </div>
+        <div class="sound-card" data-sound="fire">
+          <span class="emoji">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c0-1 .5-2 1.5-3 .8 1.6 2.5 3 2.5 6a6 6 0 0 1-12 0c0-4 3-6 6-10z"/>
+            </svg>
+          </span>
+          <span class="name">Костёр</span>
+          <span class="state">нажми, чтобы включить</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="relax-panel" id="panel-breathe">
+      <div class="breathe-wrap">
+        <div class="breathe-circle" id="breatheCircle">Нажми старт</div>
+        <div class="breathe-controls">
+          <button class="btn-outline" id="breatheToggle">Начать</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Аффирмация дня -->
+  <section class="card">
+    <h2>
+      <span class="badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l2.2 5.4L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.8-.6L12 3z"/>
+        </svg>
+      </span>
+      Аффирмация дня
+    </h2>
+    <p class="sub">Небольшая фраза для поддержки и уверенности.</p>
+    <div class="affirm-box" id="affirmBox">Загрузка...</div>
+    <button class="affirm-btn" id="affirmBtn">Другая аффирмация</button>
+  </section>
+
+  <footer>Проект «Нейро-душа» · индивидуальный проект</footer>
+</div>
+
+<!-- 5. Телефон горячей линии (всегда на виду) -->
+<div class="hotline">
+  <div class="icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.4 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.6 2z"/>
+    </svg>
+  </div>
+  <div class="txt"><b>Нужна помощь прямо сейчас?</b>Детский телефон доверия — бесплатно, анонимно, круглосуточно</div>
+  <a href="tel:88002000122">8-800-2000-122</a>
+</div>
+
+<!-- ===== Auth modal ===== -->
+<div class="auth-overlay" id="authOverlay" aria-hidden="true">
+  <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <button class="close" id="authClose" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 6l12 12"/><path d="M18 6L6 18"/>
+      </svg>
+    </button>
+    <h3 id="authTitle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/>
+      </svg>
+      <span id="authTitleText">Вход</span>
+    </h3>
+    <p class="auth-sub">Только никнейм и пароль. Никакой почты и телефона — данные хранятся в этом браузере и никуда не отправляются.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-mode="login">Войти</button>
+      <button class="auth-tab" data-mode="register">Регистрация</button>
+    </div>
+
+    <div class="auth-error" id="authError"></div>
+
+    <div class="auth-field">
+      <label for="authNick">Никнейм</label>
+      <input type="text" id="authNick" maxlength="24" autocomplete="username" placeholder="например, ТихийВетер" />
+    </div>
+    <div class="auth-field">
+      <label for="authPass">Пароль</label>
+      <input type="password" id="authPass" maxlength="64" autocomplete="current-password" placeholder="не менее 4 символов" />
+      <div class="hint" id="authHint">Пароль хешируется (SHA-256 + соль) и хранится только в твоём браузере.</div>
+    </div>
+
+    <button class="auth-submit" id="authSubmit">Войти</button>
+    <div class="auth-note">Это анонимный локальный аккаунт для удобства. Не используй важный пароль — он не защищён от чужого доступа к этому устройству.</div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ===== НАСТРОЙКИ API =====
+   ============================================================ */
+/* OpenRouter: openrouter.ai — регистрация без карты, бесплатные модели (суффикс :free)
+   реально работают с нулевым балансом (50 запросов/день на новом аккаунте).
+   Ключ получить тут: openrouter.ai -> Keys -> Create Key */
+const ANTHROPIC_BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
+const ANTHROPIC_AUTH_TOKEN = "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"; // ключ начинается с "sk-or-v1-"
+const ANTHROPIC_MODEL = "minimax/minimax-m3.1-flash:free"; // бесплатная модель OpenRouter
+
+/* Системная инструкция — характер и правила помощника.
+   Можешь менять текст, чтобы настроить тон ответов. */
+const SYSTEM_PROMPT = `Ты — «Нейро-душа», спокойный и поддерживающий помощник для школьников и студентов перед экзаменом.
+Твои правила:
+- Говори тепло, спокойно, без осуждения и без назиданий.
+- Отвечай коротко: 2–5 предложений, простым языком.
+- Сначала признай чувство собеседника, потом предложи один маленький конкретный шаг (дыхание, пауза, переформулировка мысли).
+- Не ставь диагнозы и не давай медицинских советов.
+- Если человек говорит о панике, безысходности или самоповреждении — мягко предложи позвонить на детский телефон доверия 8-800-2000-122 (бесплатно, анонимно, круглосуточно).
+- Не используй эмодзи. Не задавай больше одного вопроса за раз.`;
+
+/* ===================== 0. Анонимная авторизация ===================== */
+const AUTH_KEY = 'neuro_dusha_users_v1';
+const SESSION_KEY = 'neuro_dusha_session_v1';
+
+const authOverlay = document.getElementById('authOverlay');
+const authClose = document.getElementById('authClose');
+const authTabs = document.querySelectorAll('.auth-tab');
+const authNick = document.getElementById('authNick');
+const authPass = document.getElementById('authPass');
+const authSubmit = document.getElementById('authSubmit');
+const authError = document.getElementById('authError');
+const authTitleText = document.getElementById('authTitleText');
+const authHint = document.getElementById('authHint');
+
+const userbarGuest = document.getElementById('userbarGuest');
+const userbarWho = document.getElementById('userbarWho');
+const userAvatar = document.getElementById('userAvatar');
+const userName = document.getElementById('userName');
+const userActions = document.getElementById('userActions');
+const openAuthBtn = document.getElementById('openAuthBtn');
+
+let authMode = 'login';
+let currentUser = null;
+
+function loadUsers(){
+  try{ return JSON.parse(localStorage.getItem(AUTH_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveUsers(users){
+  localStorage.setItem(AUTH_KEY, JSON.stringify(users));
+}
+function normalizeNick(nick){
+  return String(nick || '').trim().toLowerCase();
+}
+function displayNick(nick){
+  return String(nick || '').trim();
+}
+
+async function sha256(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function randomSalt(){
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function hashPassword(password, salt){
+  return await sha256(salt + '::' + password + '::neuro-dusha');
+}
+
+function openAuth(mode = 'login'){
+  setAuthMode(mode);
+  authError.classList.remove('show');
+  authError.textContent = '';
+  authOverlay.classList.add('open');
+  authOverlay.setAttribute('aria-hidden', 'false');
+  setTimeout(() => authNick.focus(), 60);
+}
+function closeAuth(){
+  authOverlay.classList.remove('open');
+  authOverlay.setAttribute('aria-hidden', 'true');
+  authPass.value = '';
+}
+function setAuthMode(mode){
+  authMode = mode;
+  authTabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  authTitleText.textContent = mode === 'login' ? 'Вход' : 'Регистрация';
+  authSubmit.textContent = mode === 'login' ? 'Войти' : 'Создать аккаунт';
+  authPass.setAttribute('autocomplete', mode === 'login' ? 'current-password' : 'new-password');
+  authHint.textContent = mode === 'login'
+    ? 'Пароль хешируется (SHA-256 + соль) и хранится только в твоём браузере.'
+    : 'Придумай пароль не короче 4 символов. Он будет храниться только в виде хеша.';
+  authError.classList.remove('show');
+}
+function showAuthError(msg){
+  authError.textContent = msg;
+  authError.classList.add('show');
+}
+
+async function registerUser(nick, password){
+  const users = loadUsers();
+  const key = normalizeNick(nick);
+  if(!key) throw new Error('Введите никнейм.');
+  if(key.length < 2) throw new Error('Никнейм слишком короткий — минимум 2 символа.');
+  if(!/^[a-zа-яё0-9_.-]+$/i.test(key)) throw new Error('В никнейме допустимы буквы, цифры, _ . -');
+  if(users[key]) throw new Error('Этот никнейм уже занят. Попробуй другой или войди.');
+  if(!password || password.length < 4) throw new Error('Пароль должен быть не короче 4 символов.');
+
+  const salt = randomSalt();
+  const hash = await hashPassword(password, salt);
+  users[key] = { nick: displayNick(nick), salt, hash, createdAt: Date.now() };
+  saveUsers(users);
+  return users[key];
+}
+
+async function loginUser(nick, password){
+  const users = loadUsers();
+  const key = normalizeNick(nick);
+  const user = users[key];
+  if(!user) throw new Error('Такого никнейма нет. Проверь написание или зарегистрируйся.');
+  const hash = await hashPassword(password, user.salt);
+  if(hash !== user.hash) throw new Error('Неверный пароль.');
+  return user;
+}
+
+function saveSession(user){
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    key: normalizeNick(user.nick),
+    nick: user.nick,
+    at: Date.now()
+  }));
+}
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+function loadSession(){
+  try{
+    const s = JSON.parse(localStorage.getItem(SESSION_KEY));
+    if(!s || !s.key) return null;
+    const users = loadUsers();
+    return users[s.key] ? s : null;
+  }catch(e){ return null; }
+}
+
+function renderUser(){
+  if(currentUser){
+    userbarGuest.style.display = 'none';
+    userbarWho.style.display = 'flex';
+    const nick = currentUser.nick;
+    userName.innerHTML = '';
+    userName.appendChild(document.createTextNode(nick));
+    const small = document.createElement('small');
+    small.textContent = 'локальный анонимный аккаунт';
+    userName.appendChild(small);
+    userAvatar.textContent = nick.slice(0, 1).toUpperCase();
+    userActions.innerHTML = '';
+    const logout = document.createElement('button');
+    logout.textContent = 'Выйти';
+    logout.addEventListener('click', () => {
+      clearSession();
+      currentUser = null;
+      renderUser();
+      updateChatHello();
+    });
+    userActions.appendChild(logout);
+
+    const edit = document.createElement('button');
+    edit.textContent = 'Сменить ник';
+    edit.addEventListener('click', () => openAuth('register'));
+    userActions.appendChild(edit);
+  } else {
+    userbarGuest.style.display = 'flex';
+    userbarWho.style.display = 'none';
+    userActions.innerHTML = '';
+    const loginBtn = document.createElement('button');
+    loginBtn.className = 'primary';
+    loginBtn.textContent = 'Войти';
+    loginBtn.addEventListener('click', () => openAuth('login'));
+    userActions.appendChild(loginBtn);
+
+    const regBtn = document.createElement('button');
+    regBtn.textContent = 'Регистрация';
+    regBtn.addEventListener('click', () => openAuth('register'));
+    userActions.appendChild(regBtn);
+  }
+}
+
+function updateChatHello(){
+  const hello = document.getElementById('chatHello');
+  if(!hello) return;
+  if(currentUser){
+    hello.textContent = 'Привет, ' + currentUser.nick + '! Я рядом. Расскажи, что тебя сейчас тревожит перед экзаменом — можно в двух словах, можно подробно.';
+  } else {
+    hello.textContent = 'Привет! Я рядом. Расскажи, что тебя сейчас тревожит перед экзаменом — можно в двух словах, можно подробно.';
+  }
+}
+
+authTabs.forEach(tab => tab.addEventListener('click', () => setAuthMode(tab.dataset.mode)));
+authClose.addEventListener('click', closeAuth);
+authOverlay.addEventListener('click', e => { if(e.target === authOverlay) closeAuth(); });
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && authOverlay.classList.contains('open')) closeAuth();
+});
+
+authSubmit.addEventListener('click', async () => {
+  const nick = authNick.value.trim();
+  const pass = authPass.value;
+  authSubmit.disabled = true;
+  try{
+    if(authMode === 'register'){
+      await registerUser(nick, pass);
+      const user = await loginUser(nick, pass);
+      currentUser = user;
+      saveSession(user);
+      renderUser();
+      updateChatHello();
+      closeAuth();
+    } else {
+      const user = await loginUser(nick, pass);
+      currentUser = user;
+      saveSession(user);
+      renderUser();
+      updateChatHello();
+      closeAuth();
+    }
+  }catch(err){
+    showAuthError(err.message || 'Что-то пошло не так.');
+  }finally{
+    authSubmit.disabled = false;
+  }
+});
+authPass.addEventListener('keydown', e => { if(e.key === 'Enter') authSubmit.click(); });
+authNick.addEventListener('keydown', e => { if(e.key === 'Enter') authPass.focus(); });
+
+(function initAuth(){
+  const s = loadSession();
+  if(s){
+    const users = loadUsers();
+    currentUser = users[s.key] || null;
+  }
+  renderUser();
+  updateChatHello();
+})();
+
+/* ===================== 1. Шкала состояния ===================== */
+const scaleRow = document.getElementById('scaleRow');
+const stateResult = document.getElementById('stateResult');
+let selectedScale = null;
+let selectedMood = null;
+
+for(let i=1;i<=10;i++){
+  const b = document.createElement('button');
+  b.className = 'scale-btn';
+  b.textContent = i;
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.scale-btn').forEach(el=>el.classList.remove('active'));
+    b.classList.add('active');
+    selectedScale = i;
+    showStateResult();
+  });
+  scaleRow.appendChild(b);
+}
+
+document.querySelectorAll('.mood-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.mood-btn').forEach(el=>el.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMood = btn.dataset.mood;
+    showStateResult();
+  });
+});
+
+function showStateResult(){
+  stateResult.style.display = 'block';
+  let text = '';
+  if(selectedScale !== null){
+    if(selectedScale <= 3){
+      text = 'Похоже, ты спокоен(на) — отлично. Можешь просто пробежаться по аффирмации дня и идти заниматься своими делами.';
+    } else if(selectedScale <= 6){
+      text = 'Есть лёгкое волнение — это нормально. Попробуй дыхательное упражнение или пару минут звуков природы ниже.';
+    } else {
+      text = 'Уровень тревоги высокий. Рекомендуем сначала написать пару слов в чат помощнику, а затем сделать дыхательное упражнение. Если станет совсем тяжело — внизу есть номер горячей линии.';
+    }
+  }
+  if(selectedMood){
+    text += (text ? ' ' : '') + 'Отмеченное состояние: «' + selectedMood + '».';
+  }
+  stateResult.textContent = text;
+}
+
+/* ===================== 2. Чат с DeepSeek ===================== */
+const chatBox = document.getElementById('chatBox');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSend');
+
+/* История диалога — хранится в памяти вкладки, чтобы ИИ помнил контекст.
+   Не сохраняется на диск и обнуляется при перезагрузке. */
+const chatHistory = [];
+let isWaiting = false;
+
+function addMsg(text, who){
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  div.textContent = text;
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return div;
+}
+
+function addTyping(){
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return div;
+}
+function removeTyping(){
+  const t = document.getElementById('typingIndicator');
+  if(t) t.remove();
+}
+
+async function callDeepSeek(messages){
+
+  let response;
+  try{
+    response = await fetch(ANTHROPIC_BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + ANTHROPIC_AUTH_TOKEN
+      },
+      body: JSON.stringify({
+        model: ANTHROPIC_MODEL,
+        messages: messages,
+        temperature: 0.7,
+        max_tokens: 400
+      })
+    });
+  }catch(networkErr){
+    /* fetch сам бросает ошибку (без ответа сервера), когда браузер заблокировал
+       запрос политикой CORS, нет интернета или домен недоступен. Текст самой
+       ошибки браузер скрывает из соображений безопасности — реальную причину
+       видно только в консоли разработчика (F12 → вкладка Console/Network). */
+    console.error('Сетевая ошибка запроса к ИИ:', networkErr);
+    throw new Error('Не удалось отправить запрос к нейросети (вероятно, его заблокировал браузер — CORS, или нет сети). Подробности — в консоли браузера (F12).');
+  }
+
+  if(!response.ok){
+    let detail = '';
+    try{
+      const errData = await response.json();
+      detail = errData.error?.message || errData.message || '';
+    }catch(e){}
+    if(response.status === 401) throw new Error('API-ключ OpenRouter не принят (401). Проверь, что ключ скопирован целиком и не отозван.');
+    if(response.status === 404) throw new Error('Такой модели не существует (404): ' + detail);
+    if(response.status === 402) throw new Error('Нужно пополнить баланс OpenRouter (402).');
+    if(response.status === 429) throw new Error('Превышен дневной лимит бесплатных запросов (429). Попробуй завтра или добавь немного средств на счёт OpenRouter, чтобы поднять лимит.');
+    throw new Error('Ошибка сервера (' + response.status + '). ' + detail);
+  }
+
+  const data = await response.json();
+  const reply = data.choices?.[0]?.message?.content;
+  if(!reply) throw new Error('Пустой ответ от модели. Попробуй переформулировать сообщение.');
+  return reply.trim();
+}
+
+/* ===== Запасные ответы на случай, если ИИ-сервис недоступен =====
+   Чтобы чат не показывал голую ошибку (особенно на защите проекта),
+   при сбое запроса бот отвечает одной из заготовленных поддерживающих
+   фраз, а не падает молча. */
+const fallbackReplies = [
+  { keys: ['боюсь','страшно','страх'], reply: 'Страх перед экзаменом — это нормально, он говорит о том, что тебе не всё равно. Попробуй назвать конкретно, чего именно ты боишься — иногда это уже немного снижает напряжение.' },
+  { keys: ['не успе','мало времени','не готов'], reply: 'Понимаю, когда кажется, что времени не хватает — это тревожно. Подумай: что одно самое важное ты можешь повторить за оставшееся время?' },
+  { keys: ['устал','нет сил','вымотан'], reply: 'Усталость перед экзаменом накапливается — это заметно. Попробуй сделать паузу: дыхательное упражнение ниже займёт всего пару минут.' },
+  { keys: ['паника','трясёт','не могу дышать'], reply: 'Сейчас самое важное — помочь телу успокоиться. Попробуй дыхательное упражнение в блоке «Расслабление». Если состояние острое — внизу есть телефон горячей линии.' },
+  { keys: ['не получится','провалю','плохо сдам'], reply: 'Мысли вроде «я провалю» усиливают тревогу, но не являются фактом. Ты уже готовился(лась) — и сделал(а) для этого, что мог(ла).' },
+  { keys: ['спасибо','благодар'], reply: 'Пожалуйста! Я рядом, если захочешь написать ещё. Удачи на экзамене.' },
+];
+function getFallbackReply(userText){
+  const t = userText.toLowerCase();
+  for(const item of fallbackReplies){
+    if(item.keys.some(k => t.includes(k))) return item.reply;
+  }
+  const generic = [
+    'Спасибо, что поделился(лась). Расскажи немного подробнее, что именно сейчас вызывает больше всего тревоги?',
+    'Я тебя слышу. Как думаешь, что могло бы сейчас немного помочь — поговорить ещё, подышать или отвлечься на звуки природы?',
+    'Это понятное чувство перед экзаменом. Попробуй сделать один глубокий вдох прямо сейчас.',
+  ];
+  return generic[Math.floor(Math.random()*generic.length)];
+}
+let fallbackNoticeShown = false;
+
+async function sendChat(){
+  if(isWaiting) return;
+  const text = chatInput.value.trim();
+  if(!text) return;
+
+  addMsg(text, 'user');
+  chatInput.value = '';
+  chatHistory.push({ role: 'user', content: text });
+
+  isWaiting = true;
+  chatSend.disabled = true;
+  chatInput.disabled = true;
+  addTyping();
+
+  try{
+    const messages = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      ...chatHistory
+    ];
+    const reply = await callDeepSeek(messages);
+    removeTyping();
+    addMsg(reply, 'bot');
+    chatHistory.push({ role: 'assistant', content: reply });
+
+    /* Ограничиваем историю, чтобы не разрасталась бесконечно. */
+    if(chatHistory.length > 24){
+      chatHistory.splice(0, chatHistory.length - 24);
+    }
+  }catch(err){
+    removeTyping();
+    console.error('Ошибка чата с ИИ:', err);
+    if(!fallbackNoticeShown){
+      addMsg('ИИ-сервис сейчас недоступен (' + (err.message || 'см. консоль') + '). Отвечаю заготовленными фразами, пока связь не восстановится.', 'error');
+      fallbackNoticeShown = true;
+    }
+    const fallback = getFallbackReply(text);
+    addMsg(fallback, 'bot');
+    chatHistory.push({ role: 'assistant', content: fallback });
+  }finally{
+    isWaiting = false;
+    chatSend.disabled = false;
+    chatInput.disabled = false;
+    chatInput.focus();
+  }
+}
+
+chatSend.addEventListener('click', sendChat);
+chatInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendChat();
+  }
+});
+
+/* ===================== 3a. Звуки природы (Web Audio) ===================== */
+let audioCtx = null;
+let currentSoundNodes = null;
+let currentSoundCard = null;
+
+function getCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function makeNoiseBuffer(ctx){
+  const bufferSize = 2 * ctx.sampleRate;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++) data[i] = Math.random()*2 - 1;
+  return buffer;
+}
+
+function createFireSound(ctx, master){
+  const nodes = {};
+
+  const rumbleNoise = ctx.createBufferSource();
+  rumbleNoise.buffer = makeNoiseBuffer(ctx);
+  rumbleNoise.loop = true;
+  const rumbleFilter = ctx.createBiquadFilter();
+  rumbleFilter.type = 'lowpass';
+  rumbleFilter.frequency.value = 400;
+  rumbleFilter.Q.value = 0.7;
+  const rumbleGain = ctx.createGain();
+  rumbleGain.gain.value = 0.35;
+  rumbleNoise.connect(rumbleFilter);
+  rumbleFilter.connect(rumbleGain);
+  rumbleGain.connect(master);
+  rumbleNoise.start();
+  nodes.rumbleNoise = rumbleNoise;
+
+  const rumbleLfo = ctx.createOscillator();
+  rumbleLfo.frequency.value = 0.18;
+  const rumbleLfoGain = ctx.createGain();
+  rumbleLfoGain.gain.value = 0.15;
+  rumbleLfo.connect(rumbleLfoGain);
+  rumbleLfoGain.connect(rumbleGain.gain);
+  rumbleLfo.start();
+  nodes.rumbleLfo = rumbleLfo;
+
+  function crackle(){
+    if(!nodes.active) return;
+    const now = ctx.currentTime;
+    const click = ctx.createBufferSource();
+    click.buffer = makeNoiseBuffer(ctx);
+    const clickFilter = ctx.createBiquadFilter();
+    clickFilter.type = 'bandpass';
+    clickFilter.frequency.value = 1800 + Math.random() * 2500;
+    clickFilter.Q.value = 2 + Math.random() * 4;
+
+    const clickGain = ctx.createGain();
+    clickGain.gain.setValueAtTime(0, now);
+    clickGain.gain.linearRampToValueAtTime(0.15 + Math.random() * 0.25, now + 0.005);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05 + Math.random() * 0.08);
+
+    click.connect(clickFilter);
+    clickFilter.connect(clickGain);
+    clickGain.connect(master);
+
+    click.start(now);
+    click.stop(now + 0.15);
+
+    const delay = 40 + Math.random() * 280;
+    nodes.crackleTimer = setTimeout(crackle, delay);
+  }
+
+  nodes.active = true;
+  nodes.crackle = crackle;
+  crackle();
+
+  return nodes;
+}
+
+function startSound(type){
+  const ctx = getCtx();
+  const master = ctx.createGain();
+  master.gain.value = 0.0001;
+  master.connect(ctx.destination);
+  master.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 1.2);
+
+  let nodes = { master };
+
+  if(type === 'rain' || type === 'sea' || type === 'forest'){
+    const noise = ctx.createBufferSource();
+    noise.buffer = makeNoiseBuffer(ctx);
+    noise.loop = true;
+    const filter = ctx.createBiquadFilter();
+    if(type === 'rain'){ filter.type = 'highpass'; filter.frequency.value = 1200; }
+    if(type === 'sea'){
+      filter.type = 'lowpass'; filter.frequency.value = 500;
+      const lfo = ctx.createOscillator(); lfo.frequency.value = 0.12;
+      const lfoGain = ctx.createGain(); lfoGain.gain.value = 250;
+      lfo.connect(lfoGain); lfoGain.connect(filter.frequency);
+      lfo.start(); nodes.lfo = lfo;
+    }
+    if(type === 'forest'){ filter.type = 'bandpass'; filter.frequency.value = 800; filter.Q.value = 0.6; }
+    noise.connect(filter);
+    filter.connect(master);
+    noise.start();
+    nodes.noise = noise;
+  }
+
+  if(type === 'fire'){
+    const fireNodes = createFireSound(ctx, master);
+    Object.assign(nodes, fireNodes);
+  }
+
+  currentSoundNodes = nodes;
+  return nodes;
+}
+
+function stopSound(){
+  if(currentSoundNodes){
+    const { master, noise, lfo, rumbleNoise, rumbleLfo, crackleTimer } = currentSoundNodes;
+    const ctx = getCtx();
+
+    if(currentSoundNodes.active) currentSoundNodes.active = false;
+    if(crackleTimer) clearTimeout(crackleTimer);
+
+    if(master){
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+      master.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+    }
+
+    setTimeout(()=>{
+      try{ noise && noise.stop(); }catch(e){}
+      try{ lfo && lfo.stop(); }catch(e){}
+      try{ rumbleNoise && rumbleNoise.stop(); }catch(e){}
+      try{ rumbleLfo && rumbleLfo.stop(); }catch(e){}
+    }, 650);
+
+    currentSoundNodes = null;
+  }
+}
+
+document.querySelectorAll('.sound-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    const type = card.dataset.sound;
+    if(currentSoundCard === card){
+      stopSound();
+      card.classList.remove('playing');
+      card.querySelector('.state').textContent = 'нажми, чтобы включить';
+      currentSoundCard = null;
+      return;
+    }
+    if(currentSoundCard){
+      currentSoundCard.classList.remove('playing');
+      currentSoundCard.querySelector('.state').textContent = 'нажми, чтобы включить';
+      stopSound();
+    }
+    startSound(type);
+    card.classList.add('playing');
+    card.querySelector('.state').textContent = 'играет сейчас...';
+    currentSoundCard = card;
+  });
+});
+
+/* ===================== 3b. Вкладки релаксации ===================== */
+document.querySelectorAll('.relax-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.relax-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.relax-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    if(tab.dataset.tab !== 'sounds'){
+      if(currentSoundCard){
+        currentSoundCard.classList.remove('playing');
+        currentSoundCard.querySelector('.state').textContent = 'нажми, чтобы включить';
+        currentSoundCard = null;
+      }
+      stopSound();
+    }
+  });
+});
+
+/* ===================== 3c. Дыхательное упражнение (4-4-4-4) ===================== */
+const breatheCircle = document.getElementById('breatheCircle');
+const breatheToggle = document.getElementById('breatheToggle');
+let breatheRunning = false;
+let breatheTimer = null;
+const phases = [
+  { label: 'Вдох',     scale: 1.35, dur: 4000 },
+  { label: 'Задержка', scale: 1.35, dur: 4000 },
+  { label: 'Выдох',    scale: 0.85, dur: 4000 },
+  { label: 'Пауза',    scale: 0.85, dur: 4000 },
+];
+let phaseIndex = 0;
+
+function runBreathePhase(){
+  if(!breatheRunning) return;
+  const phase = phases[phaseIndex % phases.length];
+  breatheCircle.style.transitionDuration = (phase.dur/1000) + 's';
+  breatheCircle.style.transform = 'scale(' + phase.scale + ')';
+  breatheCircle.textContent = phase.label;
+  phaseIndex++;
+  breatheTimer = setTimeout(runBreathePhase, phase.dur);
+}
+
+breatheToggle.addEventListener('click', ()=>{
+  breatheRunning = !breatheRunning;
+  if(breatheRunning){
+    breatheToggle.textContent = 'Остановить';
+    breatheToggle.classList.add('active');
+    phaseIndex = 0;
+    runBreathePhase();
+  } else {
+    breatheToggle.textContent = 'Начать';
+    breatheToggle.classList.remove('active');
+    clearTimeout(breatheTimer);
+    breatheCircle.style.transform = 'scale(1)';
+    breatheCircle.textContent = 'Нажми старт';
+  }
+});
+
+/* ===================== 4. Аффирмация дня ===================== */
+const affirmations = [
+  'Я знаю — я справлюсь.',
+  'Моё волнение говорит о том, что мне не всё равно, а не о том, что я не готов.',
+  'Я умею справляться со сложными ситуациями — и с этой тоже справлюсь.',
+  'Один экзамен не определяет мою ценность и моё будущее.',
+  'Я имею право ошибаться и всё равно оставаться достойным человеком.',
+  'Я делаю всё, что в моих силах, — этого достаточно.',
+  'Моё тело и разум поддерживают меня, я могу на них опереться.',
+  'Я уже проходил через трудности раньше — и справился.',
+  'Сейчас я дышу спокойно, и это помогает мне сосредоточиться.',
+  'Я разрешаю себе немного тревожиться и всё равно идти вперёд.',
+  'Мои знания никуда не делись — я смогу их вспомнить, когда это понадобится.',
+  'Я забочусь о себе и даю себе отдых перед важным днём.',
+];
+const affirmBox = document.getElementById('affirmBox');
+const affirmBtn = document.getElementById('affirmBtn');
+
+function showRandomAffirmation(){
+  const i = Math.floor(Math.random()*affirmations.length);
+  affirmBox.textContent = affirmations[i];
+}
+affirmBtn.addEventListener('click', showRandomAffirmation);
+showRandomAffirmation();
+</script>
+</body>
+</html>
